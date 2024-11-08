@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Second Page</h2>
+<p>Select a picture, and when you go back to the first page, the picture will appear in the form.</p>
+
+<label for="newProfilePic">New Profile Picture:</label>
+<input type="file" id="newProfilePic" accept="image/*"><br><br>
+
+<button onclick="goToFirstPage()">Back to First Page</button>
+
+<script>
+    // Handle new image upload on the second page
+    document.getElementById("newProfilePic").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                localStorage.setItem("profilePic", base64Image); // Save the new image to local storage
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function goToFirstPage() {
+        window.location.href = "first.html"; // Navigate back to the first page
+    }
+</script>
+
+</body>
+</html>

@@ -1,59 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Test</title>
-    <style>
-        #video {
-            width: 100%;
-            height: 100%;
-            border: 1px solid black;
-        }
-        #canvas {
-            display: none;
-            border: 1px solid black;
-        }
-        #capture {
-            margin-top: 10px;
-        }
-        #capturedImage {
-            margin-top: 10px;
-            width: 100%;
-            height: auto;
-            border: 1px solid black;
-        }
-    </style>
-</head>
+<html>
 <body>
-    <video id="video" autoplay></video>
-    <button id="capture">Capture Image</button>
-    <canvas id="canvas"></canvas>
-    <img id="capturedImage" src="" alt="Captured Image" style="display: none;"/>
+
+<form id="myForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter your name"><br><br>
+
+    <label for="profilePic">Profile Picture:</label>
+    <input type="file" id="profilePic" accept="image/*"><br><br>
     
-    <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const captureButton = document.getElementById('capture');
-        const capturedImage = document.getElementById('capturedImage');
-        const context = canvas.getContext('2d');
+    <img id="displayPic" src="" alt="Profile Picture" style="display: none; width: 100px; height: 100px;"><br><br>
 
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-            })
-            .catch(error => {
-                console.error('Error accessing the camera:', error);
-            });
+    <button type="button" onclick="goToSecondPage()">Go to Second Page</button>
+</form>
 
-        captureButton.addEventListener('click', () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageDataURL = canvas.toDataURL('image/png');
-            capturedImage.src = imageDataURL;
-            capturedImage.style.display = 'block';
-        });
-    </script>
+<script>
+    // Load saved data from local storage when the page loads
+    document.getElementById("name").value = localStorage.getItem("name") || "";
+    const storedImage = localStorage.getItem("profilePic");
+    if (storedImage) {
+        document.getElementById("displayPic").src = storedImage;
+        document.getElementById("displayPic").style.display = "block";
+    }
+
+    // Save form data to local storage whenever input changes
+    document.getElementById("name").addEventListener("input", function() {
+        localStorage.setItem("name", this.value);
+    });
+
+    // Handle image upload directly on the first page
+    document.getElementById("profilePic").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                localStorage.setItem("profilePic", base64Image);
+                document.getElementById("displayPic").src = base64Image;
+                document.getElementById("displayPic").style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function goToSecondPage() {
+        window.location.href = "sendimage.html"; // Navigate to second page
+    }
+</script>
+
 </body>
 </html>
