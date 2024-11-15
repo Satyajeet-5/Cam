@@ -1,51 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading Animation on Button Click</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Overlay styling */
+    .loading-overlay {
+      display: none; /* Hide overlay initially */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8); /* White smoke effect */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* Ensure overlay is above everything */
+    }
+
+    .loading-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
 <body>
 
-<form id="myForm">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" placeholder="Enter your name"><br><br>
+<!-- Submit Button -->
+<button onclick="showLoading()">Submit</button>
 
-    <label for="profilePic">Profile Picture:</label>
-    <input type="file" id="profilePic" accept="image/*"><br><br>
-    
-    <img id="displayPic" src="" alt="Profile Picture" style="display: none; width: 100px; height: 100px;"><br><br>
-
-    <button type="button" onclick="goToSecondPage()">Go to Second Page</button>
-</form>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-text">Loading...</div>
+</div>
 
 <script>
-    // Load saved data from local storage when the page loads
-    document.getElementById("name").value = localStorage.getItem("name") || "";
-    const storedImage = localStorage.getItem("profilePic");
-    if (storedImage) {
-        document.getElementById("displayPic").src = storedImage;
-        document.getElementById("displayPic").style.display = "block";
-    }
+  function showLoading() {
+    // Show the loading overlay
+    document.getElementById('loadingOverlay').style.display = 'flex';
 
-    // Save form data to local storage whenever input changes
-    document.getElementById("name").addEventListener("input", function() {
-        localStorage.setItem("name", this.value);
-    });
-
-    // Handle image upload directly on the first page
-    document.getElementById("profilePic").addEventListener("change", function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Image = e.target.result;
-                localStorage.setItem("profilePic", base64Image);
-                document.getElementById("displayPic").src = base64Image;
-                document.getElementById("displayPic").style.display = "block";
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    function goToSecondPage() {
-        window.location.href = "sendimage.html"; // Navigate to second page
-    }
+    // Simulate a delay for the loading effect
+    setTimeout(() => {
+      // Hide the loading overlay after the process is complete
+      document.getElementById('loadingOverlay').style.display = 'none';
+      alert("Process Complete!"); // Replace with your actual process
+    }, 3000); // Simulates a 3-second loading delay
+  }
 </script>
 
 </body>
