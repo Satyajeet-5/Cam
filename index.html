@@ -113,7 +113,9 @@
         // Add an event listener to the file input to upload the image automatically
         document.getElementById('image1').addEventListener('change', async function() {
             if (this.files.length > 0) {
+                loading();
                 await uploadImages();
+                
             }
         });
 
