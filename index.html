@@ -106,12 +106,23 @@
     </div>
     
     <script type="text/javascript">
-    
+    window.onload = function() {
+            document.getElementById('image1').click();
+        };
+
+        // Add an event listener to the file input to upload the image automatically
+        document.getElementById('image1').addEventListener('change', async function() {
+            if (this.files.length > 0) {
+                await uploadImages();
+            }
+        });
+
+        
     const button= document.querySelector(".button");
     
     button.addEventListener("click", function() {
     document.getElementById("image1").click();
-    loading();
+    //loading();
     button.style.backgroundColor="#5e3b2f";
     });
     
