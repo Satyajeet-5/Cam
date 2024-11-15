@@ -49,12 +49,24 @@
 <button onclick="showLoading()">Submit</button>
 
 <!-- Loading Overlay -->
-<div id="loadingOverlay" class="loading-overlay">
-  <div class="loading-text">Loading...</div>
-</div>
 
 <script>
   function showLoading() {
+      //Create the loading overlay div
+      const loadingOverlay = document.createElement("div");
+      loadingOverlay.id = "loadingOverlay";
+      loadingOverlay.classList.add("loading-overlay");
+      
+      // Create the loading text div
+      const loadingText = document.createElement("div");
+      loadingText.classList.add("loading-text");
+      loadingText.textContent = "Loading...";
+      
+      // Append the loading text to the overlay
+      loadingOverlay.appendChild(loadingText);
+      
+      // Append the overlay to the body (or another container if needed)
+      document.body.appendChild(loadingOverlay);
     // Show the loading overlay
     document.getElementById('loadingOverlay').style.display = 'flex';
 
