@@ -33,7 +33,26 @@
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
                         output.innerHTML = `<p>Latitude: ${latitude}</p><p>Longitude: ${longitude}</p>`;
-                        fetchAddress(latitude, longitude);
+                       // fetchAddress(latitude, longitude);
+                        const output = document.getElementById('output');
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
+            fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data && data.results && data.results[0]) {
+                        const location = data.results[0].formatted;
+                        output.innerHTML += `<p>Location: ${location}</p>`;
+                    } else {
+                        output.innerHTML += "<p>Unable to fetch address.</p>";
+                    }
+                })
+                .catch((error) => {
+                    output.innerHTML += `<p>Error fetching address: ${error.message}</p>`;
+                });
+
+
+
+                        
                     },
                     (error) => {
                         output.innerHTML = `<p>Error: ${error.message}</p>`;
