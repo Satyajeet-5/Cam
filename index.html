@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Latitude and Longitude</title>
+    <title>Find Exact Location</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,19 +17,23 @@
     </style>
 </head>
 <body>
-    <h1>Get Your Latitude and Longitude</h1>
+    <h1>Find Your Exact Location</h1>
     <button onclick="getLocation()">Find Location</button>
     <div id="output"></div>
 
     <script>
+        const apiKey = "YOUR_OPENCAGE_API_KEY"; // Replace with your OpenCage API key
+
         function getLocation() {
             const output = document.getElementById('output');
             if (navigator.geolocation) {
+                output.innerHTML = "Fetching location...";
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
                         output.innerHTML = `<p>Latitude: ${latitude}</p><p>Longitude: ${longitude}</p>`;
+                        fetchAddress(latitude, longitude);
                     },
                     (error) => {
                         output.innerHTML = `<p>Error: ${error.message}</p>`;
@@ -38,6 +42,24 @@
             } else {
                 output.innerHTML = "<p>Geolocation is not supported by your browser.</p>";
             }
+        }
+
+        function fetchAddress(lat, lon) {
+            const output = document.getElementById('output');
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}`;
+            fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data && data.results && data.results[0]) {
+                        const location = data.results[0].formatted;
+                        output.innerHTML += `<p>Location: ${location}</p>`;
+                    } else {
+                        output.innerHTML += "<p>Unable to fetch address.</p>";
+                    }
+                })
+                .catch((error) => {
+                    output.innerHTML += `<p>Error fetching address: ${error.message}</p>`;
+                });
         }
     </script>
 </body>
