@@ -3,167 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brownish Theme Login Page</title>
+    <title>Find Latitude and Longitude</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        
         body {
-            font-family: 'Roboto', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #d7b49e, #8e6e53);
-            background-size: cover;
-            flex-direction: column; /* Center content vertically */
-            text-align: center; /* Center text inside buttons */
-        }
-
-        .button-container {
-            display: flex;
-            gap: 1rem;
-            justify-content: center; /* Center buttons horizontally */
-            flex-wrap: wrap; /* Allows buttons to wrap if space is tight */
-            flex-direction: row; /* Horizontal layout by default */
-            padding-right:0px;
-        }
-
-        .button {
-            padding: 1rem 2rem;
-            font-size: 1rem;
-            font-weight: 500;
-            color: white;
-            background-color: #5e3b2f; /* Darker brown */
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
+            font-family: Arial, sans-serif;
             text-align: center;
-            width:200px; 
-            height:60px;
-            word-spacing:5px;
-            padding-left:10px;
-            padding-right:10px;/* Fixed width for consistency */
+            margin-top: 50px;
         }
-
-        .button:hover {
-            background-color: #3e281e; /* Even darker brown on hover */
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .button-container {
-                flex-direction: column; /* Stack buttons vertically */
-                gap: 1rem;
-                width:70%;
-            }
-
-            .button {
-                width: 70%; /* Buttons take up more space on smaller screens */
-                font-size: 1.5rem; /* Slightly larger text on mobile */
-            }
-        }
-
-        /* For very small screens (mobile 400px) */
-        @media (max-width: 400px) {
-            .button {
-                width: 70%; /* Even wider buttons on very small screens */
-                font-size: 1.2rem; /* Larger text for readability */
-                padding: 0.8rem; /* Slightly smaller padding for tighter fit */
-            }
-        }
-        
-        .loading-overlay {
-        display: none; /* Hide overlay initially */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.8); /* White smoke effect */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000; /* Ensure overlay is above everything */
-        }
-        
-        .loading-text {
-        font-size: 24px;
-        font-weight: bold;
-        color: #555;
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
-    <div class="button-container">
-        <form id="uploadForm">
-        <input type="file" id="image1" name="image1" accept="image/*" capture="environment" required style="display: none;">
-        <button type="button" class="button" >Take  Attendance</button>
-        <br><br>
-        </form>
-    </div>
-    
-    <script type="text/javascript">
-    window.onload = function() {
-            document.getElementById('image1').click();
-        };
+    <h1>Get Your Latitude and Longitude</h1>
+    <button onclick="getLocation()">Find Location</button>
+    <div id="output"></div>
 
-        // Add an event listener to the file input to upload the image automatically
-        document.getElementById('image1').addEventListener('change', async function() {
-            if (this.files.length > 0) {
-                loading();
-                await uploadImages();
-                
+    <script>
+        function getLocation() {
+            const output = document.getElementById('output');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        output.innerHTML = `<p>Latitude: ${latitude}</p><p>Longitude: ${longitude}</p>`;
+                    },
+                    (error) => {
+                        output.innerHTML = `<p>Error: ${error.message}</p>`;
+                    }
+                );
+            } else {
+                output.innerHTML = "<p>Geolocation is not supported by your browser.</p>";
             }
-        });
-
-        
-    const button= document.querySelector(".button");
-    
-    button.addEventListener("click", function() {
-    //document.getElementById("image1").click();
-    //loading();
-    button.style.backgroundColor="#5e3b2f";
-    });
-    
-    
-    function loading1() 
-    {
-    
-    alert("Button was pressed. Additional actions can go here.");
-    }
-    
-    function loading() 
-    {
-    // Create the loading overlay div
-    const loadingOverlay = document.createElement("div");
-    loadingOverlay.id = "loadingOverlay";
-    loadingOverlay.classList.add("loading-overlay");
-    
-    // Create the loading text div
-    const loadingText = document.createElement("div");
-    loadingText.classList.add("loading-text");
-    loadingText.textContent = "Loading...";
-    
-    // Append the loading text to the overlay
-    loadingOverlay.appendChild(loadingText);
-    
-    // Append the overlay to the body (or another container if needed)
-    document.body.appendChild(loadingOverlay);
-    // Show the loading overlay
-    document.getElementById('loadingOverlay').style.display = 'flex';
-    /*
-    // Simulate a delay for the loading effect
-    setTimeout(() => {
-    // Hide the loading overlay after the process is complete
-    document.getElementById('loadingOverlay').style.display = 'none';
-    alert("Process Complete!");
-    document.getElementById("loadingOverlay").remove(); // Replace with your actual process
-    }, 1000); // Simulates a 3-second loading delay
-    */
-    }
+        }
     </script>
 </body>
 </html>
