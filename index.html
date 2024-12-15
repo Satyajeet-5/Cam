@@ -3,83 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Exact Location</title>
+    <title>Face Comparison</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #d7b49e, #8e6e53);
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 80%; /* Initial width */
+        max-width: 800px; /* Maximum width for larger screens */
+        padding: 1rem;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .screen {
+        max-width: 100%;
+        height: auto;
+    }
+
+    #captureCompare {
+        padding: 0.6rem 2rem;
+        font-size: 2.1rem;
+        font-weight: 500;
+        color: white;
+        background-color: #5e3b2f; /* Darker brown */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        margin-top: 1rem;
+        width: 200px;
+        height: 60px;
+    }
+
+    #captureCompare:hover {
+        background-color: #3e281e; /* Even darker brown on hover */
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            width: 90%; /* Adjust width for smaller screens */
         }
-        #output {
-            margin-top: 20px;
-            font-size: 18px;
+
+        #captureCompare {
+            width: 150px;
+            height: 50px;
+            font-size: 1.8rem;
         }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            width: 100%; /* Full width for very small screens */
+        }
+
+        #captureCompare {
+            width: 150px;
+            height: 45px;
+            font-size: 1.6rem;
+        }
+    }
+
+    @media (max-width: 300px) {
+        #captureCompare {
+            width: 100px;
+            height: 35px;
+            font-size: 1.2rem;
+        }
+    }
     </style>
 </head>
 <body>
-    <h1>Find Your Exact Location</h1>
-    <button onclick="getLocation()">Find Location</button>
-    <div id="output"></div>
-
+    <div class="container">
+        <video class="screen" id="video" autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas><br>
+        <button id="captureCompare">Capture</button><br>
+    </div>
     <script>
-        const apiKey = "YOUR_OPENCAGE_API_KEY"; // Replace with your OpenCage API key
+    
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+            })
+            .catch(function(error) {
+                console.error("Error accessing webcam:", error);
+                alert("Could not access webcam.");
+            });
 
-        function getLocation() {
-            const output = document.getElementById('output');
-            if (navigator.geolocation) {
-                output.innerHTML = "Fetching location...";
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const latitude = position.coords.latitude;
-                        const longitude = position.coords.longitude;
-                        output.innerHTML = `<p>Latitude: ${latitude}</p><p>Longitude: ${longitude}</p>`;
-                       // fetchAddress(latitude, longitude);
-                        const output = document.getElementById('output');
-            const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
-            fetch(url)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data && data.results && data.results[0]) {
-                        const location = data.results[0].formatted;
-                        output.innerHTML += `<p>Location: ${location}</p>`;
+        // Capture image and send for comparison when button is clicked
+        document.getElementById('captureCompare').addEventListener('click', function() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            // Draw the current video frame onto the canvas
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to Data URL and display it in the <img> element
+            const dataURL = canvas.toDataURL('image/jpeg');
+
+            // Convert the canvas to a Blob (image file format)
+            canvas.toBlob(async function(blob) {
+                const formData = new FormData();
+                formData.append("image1", blob, "capture.jpg"); // Append blob as an image file
+
+                const user = localStorage.getItem('student');
+                formData.append("student", user);
+
+                try {
+                    const response = await fetch('/scompare', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!response.ok) {
+                        throw new Error("Server returned an error: " + response.statusText);
+                    }
+                    const data = await response.json();
+                    if (data.message === 'Faces match!') {
+                        localStorage.setItem('user', user);
+                        localStorage.setItem('status', 'You <br>are <br> authorized <br> user' );
+                        window.location.href = '/status';
                     } else {
-                        output.innerHTML += "<p>Unable to fetch address.</p>";
+                        localStorage.setItem('status', 'You <br> are not <br> authorized<br> user ');
+                        window.location.href = '/status';
                     }
-                })
-                .catch((error) => {
-                    output.innerHTML += `<p>Error fetching address: ${error.message}</p>`;
-                });
 
+                    alert('Face comparison completed: ' + data.message);
 
-
-                        
-                    },
-                    (error) => {
-                        output.innerHTML = `<p>Error: ${error.message}</p>`;
-                    }
-                );
-            } else {
-                output.innerHTML = "<p>Geolocation is not supported by your browser.</p>";
-            }
-        }
-
-        function fetchAddress(lat, lon) {
-            const output = document.getElementById('output');
-            const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}`;
-            fetch(url)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data && data.results && data.results[0]) {
-                        const location = data.results[0].formatted;
-                        output.innerHTML += `<p>Location: ${location}</p>`;
-                    } else {
-                        output.innerHTML += "<p>Unable to fetch address.</p>";
-                    }
-                })
-                .catch((error) => {
-                    output.innerHTML += `<p>Error fetching address: ${error.message}</p>`;
-                });
-        }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error during face comparison.' + error);
+                }
+            }, 'image/jpeg', 0.95); // 0.95 is the quality factor for JPG
+        });
+        
     </script>
 </body>
 </html>
