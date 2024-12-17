@@ -1,159 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Comparison</title>
-    <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        display: flex;
-        align-content: flex-start;
-        justify-content: center;
-        flex-direction: column;
-        height: 100vh;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #d7b49e, #8e6e53);
-    }
-
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 80%; /* Initial width */
-        max-width: 800px; /* Maximum width for larger screens */
-        padding: 1rem;
-        border-radius: 10px;
-        background-color: transparent;
-    }
-
-    .screen {
-        max-width: 100%;
-        height: auto;
-    }
-
-    #captureCompare {
-        padding: 0.6rem 2rem;
-        font-size: 2.1rem;
-        font-weight: 500;
-        color: white;
-        background-color: #5e3b2f; /* Darker brown */
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        text-align: center;
-        margin-top: 1rem;
-        width: 200px;
-        height: 60px;
-    }
-
-    #captureCompare:hover {
-        background-color: #3e281e; /* Even darker brown on hover */
-    }
-
-    @media (max-width: 768px) {
-        .container {
-            width: 90%; /* Adjust width for smaller screens */
-        }
-
-        #captureCompare {
-            width: 150px;
-            height: 50px;
-            font-size: 1.8rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .container {
-            width: 100%; /* Full width for very small screens */
-        }
-
-        #captureCompare {
-            width: 200px;
-            height: 60px;
-            font-size: 2rem;
-        }
-    }
-
-    @media (max-width: 300px) {
-        #captureCompare {
-            width: 100px;
-            height: 35px;
-            font-size: 1.2rem;
-        }
-    }
-    </style>
+    <title>Page Leave Confirmation</title>
 </head>
 <body>
-    <div class="container">
-        <video class="screen" id="video" autoplay></video>
-        <canvas id="canvas" style="display: none;"></canvas><br>
-        <button id="captureCompare">Capture</button><br>
-    </div>
+    <h1>Leave Page Message Example</h1>
+    <p>Try reloading, closing, or navigating away from this page.</p>
+
     <script>
-    
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                const video = document.getElementById('video');
-                video.srcObject = stream;
-            })
-            .catch(function(error) {
-                console.error("Error accessing webcam:", error);
-                alert("Could not access webcam.");
-            });
-
-        // Capture image and send for comparison when button is clicked
-        document.getElementById('captureCompare').addEventListener('click', function() {
-            const canvas = document.getElementById('canvas');
-            const video = document.getElementById('video');
-            // Draw the current video frame onto the canvas
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Convert canvas to Data URL and display it in the <img> element
-            const dataURL = canvas.toDataURL('image/jpeg');
-
-            // Convert the canvas to a Blob (image file format)
-            canvas.toBlob(async function(blob) {
-                const formData = new FormData();
-                formData.append("image1", blob, "capture.jpg"); // Append blob as an image file
-
-                const user = localStorage.getItem('student');
-                formData.append("student", user);
-
-                try {
-                    const response = await fetch('/scompare', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    if (!response.ok) {
-                        throw new Error("Server returned an error: " + response.statusText);
-                    }
-                    const data = await response.json();
-                    if (data.message === 'Faces match!') {
-                        localStorage.setItem('user', user);
-                        localStorage.setItem('status', 'You <br>are <br> authorized <br> user' );
-                        window.location.href = '/status';
-                    } else {
-                        localStorage.setItem('status', 'You <br> are not <br> authorized<br> user ');
-                        window.location.href = '/status';
-                    }
-
-                    alert('Face comparison completed: ' + data.message);
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error during face comparison.' + error);
-                }
-            }, 'image/jpeg', 0.95); // 0.95 is the quality factor for JPG
+        window.addEventListener("beforeunload", function (event) {
+            // Standard for most browsers
+            event.preventDefault(); // Prevents default behavior
+            event.returnValue = ""; // Required for Chrome and modern browsers
+            return ""; // Some browsers still require this
         });
-        
     </script>
 </body>
 </html>
