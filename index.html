@@ -4,33 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stop Page Reload Example</title>
+    <title>Go Back Example</title>
 </head>
 <body>
-    <h1>Prevent Page Reload Example</h1>
+    <h1>Redirect to the Previous Page</h1>
+    <p>Click the button below to return to the previous page.</p>
 
-    <!-- Form Section -->
-    <form id="myForm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" placeholder="Enter your name" required>
-        <button type="submit">Submit</button>
-    </form>
+    <!-- Button to go back to the previous page -->
+    <button onclick="window.history.back()">Go Back</button>
 
-    <!-- Button Section -->
-    <button id="myButton">Click Me</button>
-
-    <script>
-        // Prevent form submission reload
-        document.getElementById("myForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Stops the default form submission
-            alert("Form submission prevented!");
-        });
-
-        // Prevent button click reload
-        document.getElementById("myButton").addEventListener("click", function(event) {
-            event.preventDefault(); // Stops default action
-            alert("Button click prevented!");
-        });
-    </script>
+    <!-- Alternative method -->
+    <button onclick="window.history.go(-1)">Go Back (Alternative)</button>
 </body>
 </html>
