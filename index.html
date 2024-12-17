@@ -4,18 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Leave Confirmation</title>
+    <title>Stop Page Reload Example</title>
 </head>
 <body>
-    <h1>Leave Page Message Example</h1>
-    <p>Try reloading, closing, or navigating away from this page.</p>
+    <h1>Prevent Page Reload Example</h1>
+
+    <!-- Form Section -->
+    <form id="myForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" placeholder="Enter your name" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Button Section -->
+    <button id="myButton">Click Me</button>
 
     <script>
-        window.addEventListener("beforeunload", function (event) {
-            // Standard for most browsers
-            event.preventDefault(); // Prevents default behavior
-            event.returnValue = ""; // Required for Chrome and modern browsers
-            return ""; // Some browsers still require this
+        // Prevent form submission reload
+        document.getElementById("myForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Stops the default form submission
+            alert("Form submission prevented!");
+        });
+
+        // Prevent button click reload
+        document.getElementById("myButton").addEventListener("click", function(event) {
+            event.preventDefault(); // Stops default action
+            alert("Button click prevented!");
         });
     </script>
 </body>
