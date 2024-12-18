@@ -1,35 +1,41 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prevent Page Refresh</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Back Navigation</title>
+    <script>
+        let backNavigationDisabled = false;
+
+        // Function to disable back navigation
+        function disableBackNavigation() {
+            backNavigationDisabled = true;
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function () {
+                if (backNavigationDisabled) {
+                    window.history.pushState(null, null, window.location.href);
+                }
+            };
+            alert("Back navigation disabled!");
+        }
+
+        // Function to enable back navigation
+        function enableBackNavigation() {
+            backNavigationDisabled = false;
+            window.onpopstate = null;
+            alert("Back navigation enabled!");
+        }
+    </script>
 </head>
 <body>
-  <!-- Form Example -->
-  <h2>Form Example</h2>
-  <form id="myForm">
-    <label for="name">Enter your name:</label>
-    <input type="text" id="name" placeholder="Your name" />
-    <button type="submit">Submit</button>
-  </form>
+    <h1>Control Back Button</h1>
+    <p>Use the buttons below to enable or disable back navigation:</p>
 
-  <!-- Button Example -->
-  <h2>Button Example</h2>
-  <button id="myButton">Click Me</button>
+    <!-- Button to disable back navigation -->
+    <button onclick="disableBackNavigation()">Disable Back Navigation</button>
 
-  <script>
-    // Prevent form submission and page refresh
-    document.getElementById("myForm").addEventListener("submit", function (event) {
-      event.preventDefault(); // Stops the default form submission
-      alert("Form submission prevented!");
-    });
-
-    // Prevent default button behavior
-    document.getElementById("myButton").addEventListener("click", function (event) {
-      event.preventDefault(); // Prevents default action
-      alert("Button click prevented!");
-    });
-  </script>
+    <!-- Button to enable back navigation -->
+    <button onclick="enableBackNavigation()">Enable Back Navigation</button>
 </body>
 </html>
