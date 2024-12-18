@@ -1,18 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Change Background on Reload</title>
+    <title>Change Color on Reload</title>
     <script>
         window.addEventListener('load', function () {
-            // Change the background color when the page reloads
-            document.body.style.backgroundColor = 'lightblue';
+            // Check if the page is reloaded
+            if (performance.getEntriesByType("navigation")[0].type === "reload") {
+                // Change the background color if it's a reload
+                document.body.style.backgroundColor = 'lightblue';
+            }
         });
     </script>
 </head>
 <body>
-    <h1>Page Background Color Changes on Reload</h1>
+    <h1>Change Background Color on Reload</h1>
     <p>Reload the page to see the background color change.</p>
 </body>
 </html>
