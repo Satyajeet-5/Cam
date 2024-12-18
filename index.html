@@ -1,19 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Back Example</title>
+    <title>Change Background on Reload</title>
+    <script>
+        window.addEventListener('load', function () {
+            // Change the background color when the page reloads
+            document.body.style.backgroundColor = 'lightblue';
+        });
+    </script>
 </head>
 <body>
-    <h1>Redirect to the Previous Page</h1>
-    <p>Click the button below to return to the previous page.</p>
-
-    <!-- Button to go back to the previous page -->
-    <button onclick="window.history.back()">Go Back</button>
-
-    <!-- Alternative method -->
-    <button onclick="window.history.go(-1)">Go Back (Alternative)</button>
+    <h1>Page Background Color Changes on Reload</h1>
+    <p>Reload the page to see the background color change.</p>
 </body>
 </html>
