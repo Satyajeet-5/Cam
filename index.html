@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,23 +10,24 @@
         // Function to disable back navigation
         function disableBackNavigation() {
             backNavigationDisabled = true;
-            // Push initial state to history
+            // Push the current state into history, making the back button ineffective
             window.history.pushState(null, null, window.location.href);
 
+            // Continuously push state to block back navigation
             window.onpopstate = function () {
                 if (backNavigationDisabled) {
-                    // Push state again to prevent navigation
                     window.history.pushState(null, null, window.location.href);
-                    alert("Back navigation is disabled!");
                 }
             };
+
+            alert("Back navigation is disabled!");
         }
 
         // Function to enable back navigation
         function enableBackNavigation() {
             backNavigationDisabled = false;
-            window.onpopstate = null; // Remove the onpopstate handler
-            alert("Back navigation enabled!");
+            window.onpopstate = null; // Remove the onpopstate event listener to restore normal navigation
+            alert("Back navigation is enabled!");
         }
     </script>
 </head>
