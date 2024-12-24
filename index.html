@@ -1,60 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Capture and Size with Format Display</title>
-  <style>
-    /* Basic styling */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Comparison</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
+        display: flex;
+        align-content: flex-start;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #d7b49e, #8e6e53);
     }
-    #imagePreview {
-      max-width: 100%;
-      max-height: 400px;
-      margin-top: 20px;
-      display: none;
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 80%; /* Initial width */
+        max-width: 800px; /* Maximum width for larger screens */
+        padding: 1rem;
+        border-radius: 10px;
+        background-color: transparent;
     }
-  </style>
+
+    .screen {
+        max-width: 100%;
+        height: auto;
+    }
+
+    #captureCompare {
+        padding: 0.6rem 2rem;
+        font-size: 2.1rem;
+        font-weight: 500;
+        color: white;
+        background-color: #5e3b2f; /* Darker brown */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        margin-top: 1rem;
+        width: 200px;
+        height: 60px;
+    }
+
+    #captureCompare:hover {
+        background-color: #3e281e; /* Even darker brown on hover */
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            width: 90%; /* Adjust width for smaller screens */
+        }
+
+        #captureCompare {
+            width: 150px;
+            height: 50px;
+            font-size: 1.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            width: 100%; /* Full width for very small screens */
+        }
+
+        #captureCompare {
+            width: 200px;
+            height: 60px;
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 300px) {
+        #captureCompare {
+            width: 100px;
+            height: 35px;
+            font-size: 1.2rem;
+        }
+    }
+
+    .loading-overlay {
+        display: none; /* Hide overlay initially */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8); /* White smoke effect */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Ensure overlay is above everything */
+    }
+
+    .loading-text {
+        font-size: 24px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    </style>
 </head>
 <body>
+    <div class="container">
+        <video class="screen" id="video" autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas><br>
+        <button id="captureCompare">Capture</button><br>
+        <!-- Image element to display the captured image -->
+        <img id="capturedImage" src="" alt="Captured Image" style="margin-top: 20px; max-width: 100%; height: auto;">
+    </div>
+    <script>
 
-  <h2>Capture an Image and See Its Size and Format</h2>
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+            })
+            .catch(function(error) {
+                console.error("Error accessing webcam:", error);
+                alert("Could not access webcam.");
+            });
 
-  <!-- File input for image capture -->
-  <input type="file" id="imageInput" accept="image/*">
-  <p id="imageSize"></p>
-  <p id="imageFormat"></p>
+        // Capture image and send for comparison when button is clicked
+        document.getElementById('captureCompare').addEventListener('click', function() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            // Draw the current video frame onto the canvas
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  <!-- Image preview -->
-  <img id="imagePreview" src="" alt="Image Preview">
+            // Convert canvas to Data URL and display it in the <img> element
+            const dataURL = canvas.toDataURL('image/png');
+            const capturedImage = document.getElementById('capturedImage');
+            capturedImage.src = dataURL; // Set the src of the img tag to display the captured image
 
-  <script>
-    // Event listener for file input change
-    document.getElementById('imageInput').addEventListener('change', function(event) {
-      const file = event.target.files[0];  // Get the selected file
-      if (file) {
-        // Display the image size in KB
-        const size = file.size / 1024;  // size in KB
-        document.getElementById('imageSize').innerText = `Image size: ${size.toFixed(2)} KB`;
+           // loading();
+            // Convert the canvas to a Blob (image file format)
+            canvas.toBlob(async function(blob) {
+                const formData = new FormData();
+                formData.append("image1", blob, "capture.png"); // Append blob as an image file
 
-        // Display the image format
-        const format = file.type.split('/')[1].toUpperCase();  // Get the format (e.g., 'jpeg', 'png')
-        document.getElementById('imageFormat').innerText = `Image format: ${format}`;
+                const user = localStorage.getItem('teacher');
+                formData.append("teacher", user);
 
-        // Create a file reader to display the image
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          // Set the preview image source to the file data
-          const imagePreview = document.getElementById('imagePreview');
-          imagePreview.src = e.target.result;
-          imagePreview.style.display = 'block';  // Show the image preview
-        };
-        reader.readAsDataURL(file);  // Read the image file
-      }
-    });
-  </script>
+                try {
+                    const response = await fetch('/tcompare', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!response.ok) {
+                        throw new Error("Server returned an error: " + response.statusText);
+                    }
+                    const data = await response.json();
+                    if (data.message === 'Faces match!') {
+                        localStorage.setItem('user', user);
+                        localStorage.setItem('status', 'You <br>are <br> authorized <br> user' );
+                        alert('Face comparison completed: ' + data.message);
+                        window.location.href = '/status';
+                    } else {
+                        localStorage.setItem('status', 'You <br> are not <br> authorized<br> user ');
+                        alert('Face comparison completed: ' + data.message);
+                        document.querySelector('.loading-overlay').remove();
+                    }
 
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error during face comparison.' + error);
+                    document.querySelector('.loading-overlay').remove();
+
+                }
+            }, 'image/jpeg', 0.95); // 0.95 is the quality factor for JPG
+        });
+
+        function loading() {
+            // Create the loading overlay div
+            const loadingOverlay = document.createElement("div");
+            loadingOverlay.id = "loadingOverlay";
+            loadingOverlay.classList.add("loading-overlay");
+
+            // Create the loading text div
+            const loadingText = document.createElement("div");
+            loadingText.classList.add("loading-text");
+            loadingText.textContent = "Loading...";
+
+            // Append the loading text to the overlay
+            loadingOverlay.appendChild(loadingText);
+
+            // Append the overlay to the body (or another container if needed)
+            document.body.appendChild(loadingOverlay);
+            // Show the loading overlay
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+    </script>
 </body>
 </html>
