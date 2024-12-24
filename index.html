@@ -1,44 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Back Navigation</title>
-    <script>
-        let backNavigationDisabled = false;
-
-        // Function to disable back navigation
-        function disableBackNavigation() {
-            backNavigationDisabled = true;
-            // Push the current state into history, making the back button ineffective
-            window.history.pushState(null, null, window.location.href);
-
-            // Continuously push state to block back navigation
-            window.onpopstate = function () {
-                if (backNavigationDisabled) {
-                    window.history.pushState(null, null, window.location.href);
-                }
-            };
-
-            alert("Back navigation is disabled!");
-        }
-
-        // Function to enable back navigation
-        function enableBackNavigation() {
-            backNavigationDisabled = false;
-            window.onpopstate = null; // Remove the onpopstate event listener to restore normal navigation
-            alert("Back navigation is enabled!");
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Capture and Size with Format Display</title>
+  <style>
+    /* Basic styling */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #imagePreview {
+      max-width: 100%;
+      max-height: 400px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <h1>Control Back Button</h1>
-    <p>Use the buttons below to enable or disable back navigation:</p>
 
-    <!-- Button to disable back navigation -->
-    <button onclick="disableBackNavigation()">Disable Back Navigation</button>
+  <h2>Capture an Image and See Its Size and Format</h2>
 
-    <!-- Button to enable back navigation -->
-    <button onclick="enableBackNavigation()">Enable Back Navigation</button>
+  <!-- File input for image capture -->
+  <input type="file" id="imageInput" accept="image/*">
+  <p id="imageSize"></p>
+  <p id="imageFormat"></p>
+
+  <!-- Image preview -->
+  <img id="imagePreview" src="" alt="Image Preview">
+
+  <script>
+    // Event listener for file input change
+    document.getElementById('imageInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];  // Get the selected file
+      if (file) {
+        // Display the image size in KB
+        const size = file.size / 1024;  // size in KB
+        document.getElementById('imageSize').innerText = `Image size: ${size.toFixed(2)} KB`;
+
+        // Display the image format
+        const format = file.type.split('/')[1].toUpperCase();  // Get the format (e.g., 'jpeg', 'png')
+        document.getElementById('imageFormat').innerText = `Image format: ${format}`;
+
+        // Create a file reader to display the image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          // Set the preview image source to the file data
+          const imagePreview = document.getElementById('imagePreview');
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = 'block';  // Show the image preview
+        };
+        reader.readAsDataURL(file);  // Read the image file
+      }
+    });
+  </script>
+
 </body>
 </html>
