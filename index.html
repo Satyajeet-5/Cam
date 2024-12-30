@@ -152,10 +152,10 @@
                 response.json().then(data => {
                     if (data.message === "Faces match!") {
                         localStorage.setItem('status', 'Your <br> are<br> authorized <br>user');
-                        window.location.href = '/status';
+                        window.location.href = 'https://saver.pythonanywhere.com/status';
                     } else {
                         localStorage.setItem('status', 'Your <br> are not <br> authorized <br> user');
-                        window.location.href = '/status';
+                        window.location.href = 'https://saver.pythonanywhere.com/status';
                     }
                     // Alert to show the comparison result
                     alert('Face comparison completed: ' + data.message);
