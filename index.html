@@ -4,93 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Face Comparison</title>
+
     <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-    body {
-        display: flex;
-        align-content: flex-start;
-        justify-content: center;
-        flex-direction: column;
-        height: 100vh;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #d7b49e, #8e6e53);
-    }
-
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 80%; /* Initial width */
-        max-width: 800px; /* Maximum width for larger screens */
-        padding: 1rem;
-        border-radius: 10px;
-        background-color: transparent;
-    }
-
-    .screen {
-        max-width: 100%;
-        height: auto;
-    }
-
-    #captureCompare {
-        padding: 0.6rem 2rem;
-        font-size: 2.1rem;
-        font-weight: 500;
-        color: white;
-        background-color: #5e3b2f; /* Darker brown */
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        text-align: center;
-        margin-top: 1rem;
-        width: 200px;
-        height: 60px;
-    }
-
-    #captureCompare:hover {
-        background-color: #3e281e; /* Even darker brown on hover */
-    }
-
-    @media (max-width: 768px) {
-        .container {
-            width: 90%; /* Adjust width for smaller screens */
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #d7b49e, #8e6e53);
+            background-size: cover;
+            flex-direction: column; /* Center content vertically */
+            text-align: center; /* Center text inside buttons */
         }
 
-        #captureCompare {
-            width: 150px;
-            height: 50px;
-            font-size: 1.8rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .container {
-            width: 100%; /* Full width for very small screens */
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center; /* Center buttons horizontally */
+            flex-wrap: wrap; /* Allows buttons to wrap if space is tight */
+            flex-direction: row; /* Horizontal layout by default */
+            padding-right:0px;
         }
 
-        #captureCompare {
-            width: 200px;
-            height: 60px;
-            font-size: 2rem;
+        .button {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+            background-color: #5e3b2f; /* Darker brown */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            width:75%;
+            height:60px;
+            word-spacing:5px;
+            padding-left:10px;
+            padding-right:10px;/* Fixed width for consistency */
         }
-    }
 
-    @media (max-width: 300px) {
-        #captureCompare {
-            width: 100px;
-            height: 35px;
-            font-size: 1.2rem;
+        .button:hover {
+            background-color: #3e281e; /* Even darker brown on hover */
         }
-    }
 
-    .loading-overlay {
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 1rem;
+                width:75%;
+            }
+
+            .button {
+                width: 75%; /* Buttons take up more space on smaller screens */
+                font-size: 1.5rem; /* Slightly larger text on mobile */
+            }
+        }
+
+        /* For very small screens (mobile 400px) */
+        @media (max-width: 400px) {
+            .button {
+                width: 75%; /* Even wider buttons on very small screens */
+                font-size: 1.2rem; /* Larger text for readability */
+                padding: 0.8rem; /* Slightly smaller padding for tighter fit */
+            }
+        }
+
+        .loading-overlay {
         display: none; /* Hide overlay initially */
         position: fixed;
         top: 0;
@@ -102,105 +88,128 @@
         justify-content: center;
         align-items: center;
         z-index: 1000; /* Ensure overlay is above everything */
-    }
+        }
 
-    .loading-text {
+        .loading-text {
         font-size: 24px;
         font-weight: bold;
         color: #555;
-    }
-
+        }
     </style>
+
 </head>
 <body>
-    <div class="container">
-        <video class="screen" id="video" autoplay></video>
-        <canvas id="canvas" style="display: none;"></canvas><br>
-        <button class="screen" id="captureCompare">Capture</button><br>
-        <!-- Image element to display the captured image -->
-        <img id="capturedImage" src="" alt="Captured Image" style="margin-top: 20px; height:70vh ">
+    <!--<h2>Upload Image for Face Comparison</h2>
+    <form id="uploadForm">
+        <label for="image1">Image 1:</label>
+        <input type="file" id="image1" name="image1" accept="image/*" capture="environment" required style="display: none;">
+        <button type="button" onclick="document.getElementById('image1').click()">Choose Image</button>
+        <br><br>
+    </form>-->
+    <div class="button-container">
+        <form id="uploadForm">
+        <input type="file" id="image1" name="image1" accept="image/*" capture="environment" required style="display: none;">
+        <button type="button" class="button" onclick="document.getElementById('image1').click()" >Facial Verification</button></button>
+        <br><br>
+        </form>
     </div>
+
     <script>
+        // Automatically click the file input when the page loads
+        window.onload = function() {
+            document.getElementById('image1').click();
+        };
 
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                const video = document.getElementById('video');
-                video.srcObject = stream;
-            })
-            .catch(function(error) {
-                console.error("Error accessing webcam:", error);
-                alert("Could not access webcam.");
-            });
-
-        // Capture image and send for comparison when button is clicked
-        document.getElementById('captureCompare').addEventListener('click', function() {
-            const canvas = document.getElementById('canvas');
-            const video = document.getElementById('video');
-            // Draw the current video frame onto the canvas
-            canvas.getContext('2d').drawImage(video, 0, 0, 300, canvas.height);
-
-            // Convert canvas to Data URL and display it in the <img> element
-            const dataURL = canvas.toDataURL('image/png');
-            const capturedImage = document.getElementById('capturedImage');
-            capturedImage.src = dataURL; // Set the src of the img tag to display the captured image
-
-           // loading();
-            // Convert the canvas to a Blob (image file format)
-            canvas.toBlob(async function(blob) {
-                const formData = new FormData();
-                formData.append("image1", blob, "capture.png"); // Append blob as an image file
-
-                const user = localStorage.getItem('teacher');
-                formData.append("teacher", user);
-
-                try {
-                    const response = await fetch('/tcompare', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    if (!response.ok) {
-                        throw new Error("Server returned an error: " + response.statusText);
-                    }
-                    const data = await response.json();
-                    if (data.message === 'Faces match!') {
-                        localStorage.setItem('user', user);
-                        localStorage.setItem('status', 'You <br>are <br> authorized <br> user' );
-                        alert('Face comparison completed: ' + data.message);
-                        window.location.href = '/status';
-                    } else {
-                        localStorage.setItem('status', 'You <br> are not <br> authorized<br> user ');
-                        alert('Face comparison completed: ' + data.message);
-                        document.querySelector('.loading-overlay').remove();
-                    }
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error during face comparison.' + error);
-                    document.querySelector('.loading-overlay').remove();
-
-                }
-            }, 'image/jpeg', 0.95); // 0.95 is the quality factor for JPG
+        // Add an event listener to the file input to upload the image automatically
+        document.getElementById('image1').addEventListener('change', async function() {
+            if (this.files.length > 0) {
+                loading();
+                await uploadImages();
+            }
         });
 
-        function loading() {
-            // Create the loading overlay div
-            const loadingOverlay = document.createElement("div");
-            loadingOverlay.id = "loadingOverlay";
-            loadingOverlay.classList.add("loading-overlay");
+        async function uploadImages() {
+            const formData = new FormData();
+            formData.append("image1", document.getElementById("image1").files[0]);
 
-            // Create the loading text div
-            const loadingText = document.createElement("div");
-            loadingText.classList.add("loading-text");
-            loadingText.textContent = "Loading...";
+            localStorage.setItem('user','I001D001T006');
+              //localStorage.setItem('paper_id','P001');
+            // Retrieve values from localStorage
+            const teacher = localStorage.getItem('user');
+            //const paper = localStorage.getItem('paper_id');
 
-            // Append the loading text to the overlay
-            loadingOverlay.appendChild(loadingText);
+            // Append the retrieved values to FormData
+            formData.append("teacher", teacher);  // Adding student information
+            //formData.append("paper", paper);      // Adding paper ID information
 
-            // Append the overlay to the body (or another container if needed)
-            document.body.appendChild(loadingOverlay);
-            // Show the loading overlay
-            document.getElementById('loadingOverlay').style.display = 'flex';
+            try {
+                const response = await fetch('https://saver.pythonanywhere.com/tcompare', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Handle the response
+                response.json().then(data => {
+                    if (data.message === "Faces match!") {
+                        localStorage.setItem('status', 'Your <br> are<br> authorized <br>user');
+                        window.location.href = '/status';
+                    } else {
+                        localStorage.setItem('status', 'Your <br> are not <br> authorized <br> user');
+                        window.location.href = '/status';
+                    }
+                    // Alert to show the comparison result
+                    alert('Face comparison completed: ' + data.message);
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
+
+       const button= document.querySelector(".button");
+
+    button.addEventListener("click", function() {
+    //document.getElementById("image1").click();
+    //loading();
+    button.style.backgroundColor="#5e3b2f";
+    });
+
+
+    function loading1()
+    {
+
+    alert("Button was pressed. Additional actions can go here.");
+    }
+
+    function loading()
+    {
+    // Create the loading overlay div
+    const loadingOverlay = document.createElement("div");
+    loadingOverlay.id = "loadingOverlay";
+    loadingOverlay.classList.add("loading-overlay");
+
+    // Create the loading text div
+    const loadingText = document.createElement("div");
+    loadingText.classList.add("loading-text");
+    loadingText.textContent = "Loading...";
+
+    // Append the loading text to the overlay
+    loadingOverlay.appendChild(loadingText);
+
+    // Append the overlay to the body (or another container if needed)
+    document.body.appendChild(loadingOverlay);
+    // Show the loading overlay
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    /*
+    // Simulate a delay for the loading effect
+    setTimeout(() => {
+    // Hide the loading overlay after the process is complete
+    document.getElementById('loadingOverlay').style.display = 'none';
+    alert("Process Complete!");
+    document.getElementById("loadingOverlay").remove(); // Replace with your actual process
+    }, 1000); // Simulates a 3-second loading delay
+    */
+    }
 
     </script>
 </body>
